@@ -6,13 +6,13 @@ const Header: React.FC = () => {
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-xl font-bold">Daily Wisdom</h1>
         <nav>
-          <Link href="/">
-            <a className="text-gray-300 hover:text-white px-3">Home</a>
+          <Link href="/" className="text-gray-300 hover:text-white px-3">
+            Home
           </Link>
-          <Link href="/privacy-policy">
-            <a className="text-gray-300 hover:text-white px-3">
-              Política de Privacidade
-            </a>
+          <Link
+            href="/privacy-policy"
+            className="text-gray-300 hover:text-white px-3">
+            Política de Privacidade
           </Link>
         </nav>
       </div>
