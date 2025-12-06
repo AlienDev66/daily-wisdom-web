@@ -1,75 +1,73 @@
-import Image from "next/image";
-import localFont from "next/font/local";
+import { useState } from "react";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import { useApiFetchQuotes } from "./api-fetch-get-quotes";
 
 export default function Home() {
+  const [copied, setCopied] = useState(false);
+
+  const { data: quote, isLoading, refetch } = useApiFetchQuotes();
+
+  // const fetchQuote = async () => {
+  //   const { data } = await axios.get("https://buddha-api.com/api/random");
+  //   return data.quote;
+  // };
+
+  // const {
+  //   data: quote,
+  //   isLoading,
+  //   refetch,
+  // } = useQuery("dailyQuote", fetchQuote, {
+  //   refetchOnWindowFocus: false,
+  // });
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(quote?.text!);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShareWhatsApp = () => {
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+      quote?.text!
+    )}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
+  console.log("QUOTES", quote);
+
   return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}>
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert rounded-lg"
-          src="/logo.png"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-      </main>
-      {/* <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer">
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer">
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer">
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer> */}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+      <h1 className="text-4xl font-bold mb-6">✨ Daily Wisdom ✨</h1>
+      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2 text-center">
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <p
+              onClick={handleCopy}
+              className="text-xl mb-4 cursor-pointer hover:underline"
+              title="Click to copy">
+              {quote?.text}
+            </p>
+            {copied && (
+              <p className="text-green-400 text-sm">Copied to clipboard!</p>
+            )}
+            <button
+              onClick={handleShareWhatsApp}
+              className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-full text-white font-medium transition">
+              Share on WhatsApp
+            </button>
+          </>
+        )}
+      </div>
+      <p className="text-sm mt-4 text-gray-400">
+        Return tomorrow for a new dose of inspiration ✨
+      </p>
+      <button
+        onClick={() => refetch()}
+        className="mt-4 text-blue-400 hover:underline text-sm">
+        Refresh Quote
+      </button>
     </div>
   );
 }
